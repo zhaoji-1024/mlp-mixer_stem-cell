@@ -3,9 +3,10 @@ from dataset import get_train_loader, get_val_loader
 from mlp_model.mlp_mixer import MLP_Mixer
 import torch.optim as optim
 import os
+from tqdm import tqdm
 
 # 总训练轮数
-epochs = 2
+epochs = 10
 # 学习率
 lr = 0.001
 
@@ -40,7 +41,7 @@ model_path = './trained_model'
 best_val_loss = 999
 
 # 训练模型
-for epoch in range(2):
+for epoch in range(epochs):
     loader = iter(train_loader)
     for step, data in enumerate(loader):
         inputs, labels = data
@@ -58,12 +59,13 @@ for epoch in range(2):
     # 每训练一轮计算一次验证集loss
     v_loader = iter(val_loader)
     val_losses = []
-    for val_step, val_data in enumerate(v_loader):
-        inputs, labels = val_data
-        inputs, labels = inputs.to(device), labels.to(device)
-        outputs = mlp_net(inputs)
-        loss = criterion(outputs, labels)
-        val_losses.append(loss)
+    with torch.no_grad():
+        for val_step, val_data in enumerate(tqdm(v_loader)):
+            inputs, labels = val_data
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = mlp_net(inputs)
+            loss = criterion(outputs, labels)
+            val_losses.append(loss)
     val_loss = torch.tensor(val_losses).mean().detach().item()
     val_loss_str = f'epoch: {epoch} val_loss: {val_loss} \n'
     val_log_f.write(val_loss_str)
