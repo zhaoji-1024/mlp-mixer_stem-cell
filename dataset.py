@@ -29,7 +29,7 @@ class CellDataset(Dataset):
         dir_name = os.path.split(img_file)[0]
         label = self.label_dict[dir_name[0]]
         img_tensor = torch.tensor(img, dtype=torch.float32)
-        return img_tensor, label
+        return img_tensor, label, img_file
 
     def __len__(self):
         length = len(self.train_files) if self.is_traning else len(self.val_files)
