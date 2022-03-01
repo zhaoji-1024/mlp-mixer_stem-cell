@@ -11,7 +11,7 @@ epochs = 10
 lr = 0.001
 
 # 定义模型对象
-mlp_net = MLP_Mixer(image_size=45, patch_size=5, dim=256, num_classes=3, num_blocks=8, token_dim=256, channel_dim=2048)
+mlp_net = MLP_Mixer(image_size=45, patch_size=5, dim=256, num_classes=3, num_blocks=8, token_dim=256, channel_dim=2048, dropout=0.5)
 
 # 定义损失函数和优化器
 criterion = torch.nn.CrossEntropyLoss()
@@ -22,9 +22,9 @@ train_loader = get_train_loader(batch_size=128)
 val_loader = get_val_loader(batch_size=128)
 
 # 打开训练日志文件
-train_log_f = open('./log/train-loss.log', 'a')
+train_log_f = open('./log/train-loss.log', 'w')
 # 打开验证日志文件
-val_log_f = open('./log/val-loss.log', 'a')
+val_log_f = open('./log/val-loss.log', 'w')
 
 # 判断是否支持gpu
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -43,6 +43,7 @@ best_val_loss = 999
 # 训练模型
 for epoch in range(epochs):
     loader = iter(train_loader)
+    mlp_net.train()
     for step, data in enumerate(loader):
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
@@ -57,6 +58,7 @@ for epoch in range(epochs):
             train_log_f.write(loss_str)
             print(loss_str)
     # 每训练一轮计算一次验证集loss
+    mlp_net.eval()
     v_loader = iter(val_loader)
     val_losses = []
     with torch.no_grad():

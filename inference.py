@@ -15,10 +15,11 @@ mlp_net.load_state_dict(torch.load('./trained_model/best_model.pth'))
 img_tensor = get_img_tensor(img_path)
 
 # 模型输出
-output = mlp_net(img_tensor)
+with torch.no_grad():
+    output = mlp_net(img_tensor)
 
 # 预测序号
-label = torch.argmax(output).item()
+label = torch.argmax(output, dim=1).item()
 
 label_dict = {0: '星形胶质细胞', 1: '少突胶质细胞', 2: '神经元细胞'}
 

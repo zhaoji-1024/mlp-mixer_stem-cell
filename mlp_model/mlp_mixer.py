@@ -3,12 +3,12 @@ import einops
 from mlp_model.mlp_struct import Mixer_struc
 
 class MLP_Mixer(nn.Module):
-    def __init__(self, image_size, patch_size, token_dim, channel_dim, num_classes, dim, num_blocks):
+    def __init__(self, image_size, patch_size, token_dim, channel_dim, num_classes, dim, num_blocks, dropout=.0):
         super(MLP_Mixer, self).__init__()
         n_patches = (image_size // patch_size) ** 2
         self.patch_size_embbeder = nn.Conv2d(kernel_size=patch_size, stride=patch_size, in_channels=1, out_channels=dim)
         self.blocks = nn.ModuleList([
-            Mixer_struc(patches=n_patches, token_dim=token_dim, channel_dim=channel_dim, dim=dim) for i in range(num_blocks)
+            Mixer_struc(patches=n_patches, token_dim=token_dim, channel_dim=channel_dim, dim=dim, dropout=dropout) for i in range(num_blocks)
         ])
 
         self.Layernorm1 = nn.LayerNorm(dim)
